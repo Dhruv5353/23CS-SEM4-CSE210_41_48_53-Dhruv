@@ -101,32 +101,23 @@ class MyRegisterState extends State<MyRegister> {
 
         if (!mounted) return;
 
-        // Store user data in secure storage
-        await _authService.storage
-            .write(key: 'user_role', value: response['role']);
-        await _authService.storage
-            .write(key: 'user_name', value: response['name']);
-        await _authService.storage
-            .write(key: 'auth_token', value: response['token']);
-
-        // Navigate based on role
+        // Navigate based on role to the appropriate profile page
         if (response['role'] == 'student') {
-          Navigator.pushReplacementNamed(context, 'student_home');
+          Navigator.pushReplacementNamed(context, 'student_profile');
         } else if (response['role'] == 'faculty') {
-          Navigator.pushReplacementNamed(context, 'faculty_home');
+          Navigator.pushReplacementNamed(context, 'faculty_profile');
         }
       } catch (e) {
         if (!mounted) return;
 
         String errorMessage = 'Registration failed. Please try again.';
-
+        
         if (e.toString().contains('Exception:')) {
           final errorString = e.toString().split('Exception:')[1].trim();
           try {
             // Try to parse error message from JSON response
             final errorJson = json.decode(errorString);
-            errorMessage =
-                errorJson['message'] ?? errorJson['error'] ?? errorString;
+            errorMessage = errorJson['message'] ?? errorJson['error'] ?? errorString;
           } catch (_) {
             // If JSON parsing fails, use the error string as is
             errorMessage = errorString;
